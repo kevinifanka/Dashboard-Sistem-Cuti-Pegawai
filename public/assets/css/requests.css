@@ -1,0 +1,280 @@
+/* =============================================
+   REQUESTS.CSS — Permohonan Cuti Page
+   1:1 match with LeaveRequests.tsx
+   ============================================= */
+
+/* ---- Tabs ---- */
+.tabs-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  gap: 2px;
+  margin-bottom: var(--space-6);
+}
+
+.tab-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-500);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  font-family: var(--font-family);
+}
+
+.tab-trigger:hover {
+  color: var(--color-gray-700);
+  background-color: var(--color-gray-200);
+}
+
+.tab-trigger.active {
+  background-color: var(--color-white);
+  color: var(--color-gray-900);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-600);
+}
+
+.tab-trigger.active .tab-badge {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ---- Card Header with filter ---- */
+.req-card-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.req-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .req-card-top {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.req-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .req-filter-group {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* ---- Select with icon inside (like Shadcn SelectTrigger) ---- */
+.icon-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon-select-wrapper .select-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--color-gray-400);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.icon-select-wrapper .filter-select {
+  padding-left: 30px;
+}
+
+/* ---- Attachment pill in table ---- */
+.attach-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background-color: #eff6ff;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  color: #2563eb;
+}
+
+.attach-pill svg { width: 11px; height: 11px; }
+
+/* ---- Detail Modal (wider) ---- */
+.modal-box-md { max-width: 480px; }
+
+.modal-emp-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.modal-emp-row .avatar {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.modal-emp-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-gray-900);
+}
+
+.modal-emp-sub {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  margin-top: 2px;
+}
+
+.detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.detail-row .detail-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  margin-bottom: 2px;
+}
+
+.detail-row .detail-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-gray-900);
+}
+
+/* ---- Attachment list in modal ---- */
+.attach-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.attach-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: background-color var(--transition-fast);
+}
+
+.attach-item:hover { background-color: var(--color-gray-100); }
+
+.attach-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.attach-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.attach-icon-box svg { width: 18px; height: 18px; color: var(--color-gray-500); }
+
+.attach-name {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attach-size {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-400);
+  margin-top: 1px;
+}
+
+/* ---- Green confirm button ---- */
+.btn-confirm-approve {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  background-color: #16a34a;
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  font-family: var(--font-family);
+}
+.btn-confirm-approve:hover { background-color: #15803d; }
+
+.btn-confirm-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 16px;
+  background-color: #dc2626;
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+  font-family: var(--font-family);
+}
+.btn-confirm-reject:hover { background-color: #b91c1c; }
+.btn-confirm-reject:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Backdrop click to close */
+.modal-backdrop[data-closeable="true"] { cursor: default; }

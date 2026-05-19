@@ -1,0 +1,8 @@
+# Options -Indexes
+
+# ---- Redirect root to public/ ----
+RewriteEngine On
+RewriteRule ^$ public/ [L]
+
+# ---- Block direct access to app/ ----
+RewriteRule ^app/ - [F,L]

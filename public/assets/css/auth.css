@@ -1,0 +1,343 @@
+/* =============================================
+   auth.css — Login Page (matches Login.tsx 1:1)
+   Font: Poppins
+   ============================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: #000;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ---- Full-page split wrapper ---- */
+.auth-page {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  position: relative;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+/* ---- LEFT PANEL — form area ---- */
+.auth-left {
+  flex: 0 0 754px;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 230px;
+  padding-left: 175px;
+}
+
+/* ---- FORM BOX ---- */
+.auth-form-box {
+  width: 404px;
+  position: relative;
+}
+
+/* "Welcome back!" */
+.auth-title {
+  font-size: 32px;
+  font-weight: 500;
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+/* "EMPLOYEE MANAGEMENT SISTEM" */
+.auth-subtitle {
+  font-size: 16px;
+  font-weight: 500;
+  width: 372px;
+  margin-top: 4px;
+  margin-bottom: 28px;
+  line-height: 1.4;
+}
+
+/* ---- Field group ---- */
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.auth-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.auth-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.auth-forgot {
+  font-size: 10px;
+  font-weight: 500;
+  color: #0c2a92;
+  text-decoration: none;
+}
+.auth-forgot:hover { text-decoration: underline; }
+
+/* ---- Input ---- */
+.auth-input {
+  width: 404px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid #d9d9d9;
+  padding: 10px 10px;
+  font-size: 10px;
+  font-family: 'Poppins', sans-serif;
+  color: #000;
+  outline: none;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+.auth-input::placeholder { color: #d9d9d9; }
+.auth-input:focus { border-color: #111; }
+.auth-input.error { border-color: #ef4444; }
+
+/* ---- Remember me ---- */
+.auth-remember {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.auth-remember input[type="checkbox"] {
+  width: 9px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid #000;
+  accent-color: #111;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.auth-remember label {
+  font-size: 9px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ---- Login button ---- */
+.auth-btn {
+  position: relative;
+  width: 404px;
+  height: 32px;
+  border-radius: 10px;
+  background-color: #111;
+  border: 1px solid #111;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s, opacity 0.2s;
+  margin-bottom: 12px;
+}
+.auth-btn:hover { background-color: #333; }
+.auth-btn:active { opacity: 0.9; }
+
+/* ---- Sign up link ---- */
+.auth-signup-row {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  width: 404px;
+  margin-top: 16px;
+}
+.auth-signup-row a {
+  color: #0f3dde;
+  text-decoration: none;
+  font-weight: 500;
+}
+.auth-signup-row a:hover { text-decoration: underline; }
+
+/* ---- Or divider ---- */
+.auth-divider {
+  position: relative;
+  width: 400px;
+  height: 14px;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth-divider-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #f5f5f5;
+  transform: translateY(-50%);
+}
+.auth-divider-or {
+  position: relative;
+  background: #fff;
+  padding: 0 8px;
+  font-size: 9px;
+  font-weight: 500;
+  z-index: 1;
+}
+
+/* ---- Error alert ---- */
+.auth-alert {
+  width: 404px;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #991b1b;
+  margin-bottom: 14px;
+}
+
+/* ---- RIGHT PANEL — image/decoration ---- */
+.auth-right {
+  flex: 1;
+  position: relative;
+  border-radius: 45px 0 0 45px;
+  overflow: hidden;
+  min-height: 100vh;
+  background: linear-gradient(145deg, #0a0a0a 0%, #1a1a1a 40%, #2a2a2a 70%, #111 100%);
+}
+
+/* Decorative overlay elements */
+.auth-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.07) 0%, transparent 60%),
+    radial-gradient(circle at 75% 70%, rgba(255,255,255,0.05) 0%, transparent 50%);
+}
+.auth-right-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+  padding: 40px;
+}
+.auth-right-logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+.auth-right-title {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 12px;
+  opacity: 0.95;
+}
+.auth-right-desc {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.7;
+  max-width: 340px;
+  line-height: 1.7;
+}
+.auth-right-circles {
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 350px; height: 350px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.auth-right-circles::before {
+  content: '';
+  position: absolute;
+  top: 60px; left: 60px;
+  right: 60px; bottom: 60px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.auth-right-bottom-circle {
+  position: absolute;
+  bottom: -100px; left: -60px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* =============================================
+   REGISTER — Extended styles
+   ============================================= */
+
+/* Register left panel: wider + scrollable */
+.reg-left {
+  flex: 0 0 900px;
+  padding-top: 60px;
+  padding-bottom: 40px;
+  overflow-y: auto;
+  align-items: flex-start;
+}
+
+/* Register form box: wider to fit 2-col */
+.reg-form-box {
+  width: 580px;
+}
+
+/* 2-column row */
+.reg-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 0;
+}
+.reg-row .auth-field { margin-bottom: 16px; }
+
+/* Input in a 2-col row — takes full column width */
+.reg-input {
+  width: 100% !important;
+}
+
+/* Input that spans full form width */
+.reg-input-full {
+  width: 580px;
+}
+
+/* Register button — full form width */
+.reg-btn {
+  width: 580px;
+  height: 40px;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* Alert in register — wider */
+.reg-form-box .auth-alert {
+  width: 580px;
+}
+
+/* Signup row wider */
+.reg-form-box .auth-signup-row {
+  width: 580px;
+}
+
+/* Select styling (matches input) */
+.auth-input[type="select"],
+select.auth-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d9d9d9' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+  cursor: pointer;
+}
+select.auth-input option { font-size: 12px; }

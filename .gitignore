@@ -1,0 +1,32 @@
+# ===== Folder Desain / Referensi (tidak perlu di-push) =====
+Xample Desain/
+
+# ===== Konfigurasi Database (SENSITIF — jangan di-push) =====
+app/config/database.php
+
+# ===== Setup & Migration Script (hapus setelah dipakai) =====
+public/setup.php
+
+# ===== File database lokal =====
+database/*.sql.bak
+
+# ===== Cache & Log =====
+*.log
+*.cache
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Editor =====
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===== Upload files (jika ada) =====
+public/uploads/
+
+# ===== Node (jika ada) =====
+node_modules/
