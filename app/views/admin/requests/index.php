@@ -9,7 +9,9 @@ $requests = array_map(function(array $r): array {
     'id'         => $r['request_code'],      // display code (LR001)
     'employeeId' => $r['emp_code'],
     'name'       => $r['employee_name'],
-    'avatar'     => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($r['avatar_seed'] ?? 'User'),
+    'avatar'     => !empty($r['photo_path'])
+                      ? (PUBLIC_URL . $r['photo_path'] . '?v=' . time())
+                      : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($r['avatar_seed'] ?? 'User'),
     'dept'       => $r['department_name'],
     'type'       => $r['leave_type_name'],
     'start'      => $r['start_date'],

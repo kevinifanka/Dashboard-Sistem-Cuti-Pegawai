@@ -41,6 +41,19 @@ class AdminDashboardController
     return $_SESSION['user'] ?? [];
   }
 
+  /**
+   * Hanya Admin / HRD yang boleh akses.
+   * Employee biasa diredirect ke dashboard.
+   */
+  private function requireAdminRole(): void
+  {
+    $role = $_SESSION['user']['role'] ?? 'employee';
+    if (!in_array($role, ['admin', 'hrd'], true)) {
+      header('Location: ' . PUBLIC_URL . '/?page=dashboard&forbidden=1');
+      exit;
+    }
+  }
+
   // ─── Render ────────────────────────────────────────────────
   public function render(string $view, array $data = []): void
   {
@@ -298,17 +311,88 @@ class AdminDashboardController
     $this->requireAuth();
 
     $model       = new EmployeeModel();
-    $employees   = $model->getAll();
     $departments = $model->getDepartments();
 
+    // ── POST: Tambah Pegawai Baru ──
+    if ($_SERVER['REQUEST_METHOD'] === 'POST'
+        && ($_POST['_action'] ?? '') === 'add_employee') {
+
+      $name         = trim($_POST['name']          ?? '');
+      $email        = trim($_POST['email']         ?? '');
+      $phone        = trim($_POST['phone']         ?? '');
+      $position     = trim($_POST['position']      ?? '');
+      $deptId       = (int)($_POST['department_id'] ?? 0);
+      $joinDate     = trim($_POST['join_date']     ?? '');
+      $address      = trim($_POST['address']       ?? '');
+      $status       = $_POST['status']             ?? 'active';
+      $role         = $_POST['role']               ?? 'employee';
+      $password     = trim($_POST['password']      ?? '');
+
+      $errors = [];
+      if (!$name)    $errors[] = 'Nama lengkap wajib diisi.';
+      if (!$email)   $errors[] = 'Email wajib diisi.';
+      elseif (!filter_var($email, FILTER_VALIDATE_EMAIL))
+                     $errors[] = 'Format email tidak valid.';
+      if (!$deptId)  $errors[] = 'Departemen wajib dipilih.';
+      if (!$position)$errors[] = 'Jabatan/posisi wajib diisi.';
+      if (!in_array($status, ['active','inactive'], true))
+                     $errors[] = 'Status tidak valid.';
+
+      if (empty($errors)) {
+        try {
+          $model->createEmployee([
+            'name'          => $name,
+            'email'         => $email,
+            'phone'         => $phone,
+            'position'      => $position,
+            'department_id' => $deptId,
+            'join_date'     => $joinDate ?: null,
+            'address'       => $address,
+            'status'        => $status,
+            'role'          => $role,
+            'password'      => $password,
+          ]);
+          header('Location: ' . PUBLIC_URL . '/?page=employees&added=1');
+          exit;
+        } catch (PDOException $e) {
+          // Email duplikat
+          if (str_contains($e->getMessage(), '1062')) {
+            $errors[] = 'Email sudah terdaftar. Gunakan email lain.';
+          } else {
+            $errors[] = 'Gagal menyimpan data. Silakan coba lagi.';
+          }
+        }
+      }
+
+      // Ada error — render ulang dengan pesan & isi form tetap
+      $this->render('admin/employees/index', [
+        'pageTitle'   => 'Data Pegawai',
+        'currentPage' => 'employees',
+        'pageCss'     => ['pages.css', 'employees.css'],
+        'pageJs'      => ['employees.js'],
+        'authUser'    => $this->authUser(),
+        'employees'   => $model->getAll(),
+        'departments' => $departments,
+        'formErrors'  => $errors,
+        'old'         => $_POST,
+        'openAddModal'=> true,   // buka modal otomatis
+      ]);
+      return;
+    }
+
+    // ── GET ──
     $this->render('admin/employees/index', [
       'pageTitle'   => 'Data Pegawai',
       'currentPage' => 'employees',
       'pageCss'     => ['pages.css', 'employees.css'],
       'pageJs'      => ['employees.js'],
       'authUser'    => $this->authUser(),
-      'employees'   => $employees,
+      'employees'   => $model->getAll(),
       'departments' => $departments,
+      'formErrors'  => [],
+      'old'         => [],
+      'openAddModal'=> false,
+      'added'       => isset($_GET['added']),
     ]);
   }
 
@@ -384,16 +468,14 @@ class AdminDashboardController
     ]);
   }
 
-  // ─── Reports ──────────────────────────────────────────────
+  // ─── Reports (DISEMBUNYIKAN SEMENTARA) ────────────────────
+  // Untuk mengaktifkan kembali: uncomment sidebar.php dan ganti method ini
   public function reports(): void
   {
     $this->requireAuth();
-    $this->render('admin/reports/index', [
-      'pageTitle'   => 'Laporan',
-      'currentPage' => 'reports',
-      'pageCss'     => ['pages.css', 'reports.css'],
-      'authUser'    => $this->authUser(),
-    ]);
+    // Redirect ke dashboard — halaman laporan disembunyikan sementara
+    header('Location: ' . PUBLIC_URL . '/?page=dashboard');
+    exit;
   }
 
 
@@ -402,9 +484,68 @@ class AdminDashboardController
   {
     $this->requireAuth();
 
-    $authUser = $this->authUser();
-    $empModel = new EmployeeModel();
+    $authUser    = $this->authUser();
+    $empModel    = new EmployeeModel();
     $departments = $empModel->getDepartments();
+    $empId       = (int)$authUser['employee_id'];
+
+    // ── Handle POST: Upload foto profil ──
+    if ($_SERVER['REQUEST_METHOD'] === 'POST'
+        && ($_POST['_action'] ?? '') === 'upload_photo') {
+
+      $file    = $_FILES['photo'] ?? null;
+      $errors  = [];
+
+      if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+        $errors[] = 'Gagal mengunggah foto. Coba lagi.';
+      } else {
+        $maxSize  = 2 * 1024 * 1024; // 2 MB
+        $allowed  = ['image/jpeg','image/png','image/gif','image/webp'];
+        $mimeType = mime_content_type($file['tmp_name']);
+        $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $extMap   = ['jpg'=>'jpg','jpeg'=>'jpg','png'=>'png','gif'=>'gif','webp'=>'webp'];
+
+        if ($file['size'] > $maxSize)           $errors[] = 'Ukuran foto maksimal 2 MB.';
+        if (!in_array($mimeType, $allowed))     $errors[] = 'Format foto harus JPG, PNG, GIF, atau WebP.';
+        if (!isset($extMap[$ext]))              $errors[] = 'Ekstensi file tidak valid.';
+      }
+
+      if (empty($errors)) {
+        // Buat folder jika belum ada
+        $uploadDir = dirname(__DIR__, 2) . '/public/uploads/avatars/';
+        if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
+
+        // Hapus foto lama
+        $empModel->deleteOldPhoto($empId);
+
+        // Simpan dengan nama unik
+        $filename  = 'avatar_' . $empId . '_' . time() . '.' . $extMap[$ext];
+        $destPath  = $uploadDir . $filename;
+        $webPath   = '/uploads/avatars/' . $filename;
+
+        if (move_uploaded_file($file['tmp_name'], $destPath)) {
+          $empModel->updatePhoto($empId, $webPath);
+          // Refresh session
+          $_SESSION['user']['photo_path'] = $webPath;
+          header('Location: ' . PUBLIC_URL . '/?page=profile&updated=1&photo=1');
+          exit;
+        } else {
+          $errors[] = 'Gagal menyimpan foto. Periksa izin folder.';
+        }
+      }
+
+      // Error upload → kembali ke profile
+      $this->render('admin/profile/index', [
+        'pageTitle'   => 'Profile',
+        'currentPage' => 'profile',
+        'pageCss'     => ['pages.css', 'profile.css'],
+        'authUser'    => $authUser,
+        'departments' => $departments,
+        'formErrors'  => $errors,
+        'old'         => [],
+      ]);
+      return;
+    }
 
     // ── Handle POST: simpan perubahan ke DB ──
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -418,7 +559,7 @@ class AdminDashboardController
       if (!$name) $errors[] = 'Nama lengkap wajib diisi.';
 
       if (empty($errors)) {
-        $empModel->updateProfile((int)$authUser['employee_id'], [
+        $empModel->updateProfile($empId, [
           'name'          => $name,
           'phone'         => $phone,
           'position'      => $position,
@@ -428,7 +569,7 @@ class AdminDashboardController
 
         // Refresh session dengan data terbaru dari DB
         $userModel = new UserModel();
-        $fresh = $userModel->findById((int)$authUser['employee_id']);
+        $fresh = $userModel->findById($empId);
         if ($fresh) {
           session_regenerate_id(false);
           $_SESSION['user'] = [
@@ -445,6 +586,8 @@ class AdminDashboardController
             'address'       => $fresh['address']       ?? '',
             'avatar_seed'   => $fresh['name'],
             'join_date'     => $fresh['join_date']     ?? '',
+            'photo_path'    => $fresh['photo_path']    ?? null,
+            'permissions'   => $_SESSION['user']['permissions'] ?? [],
           ];
         }
 
@@ -519,6 +662,54 @@ class AdminDashboardController
       'settings'     => $current,
       'saved'        => $saved,
       'autoRejected' => $autoRejected,
+    ]);
+  }
+  // ─── Role Management ──────────────────────────────────────
+  public function roleManagement(): void
+  {
+    $this->requireAuth();
+    $this->requireAdminRole();
+
+    $model   = new EmployeeModel();
+    $saved   = false;
+    $savedName = '';
+
+    // POST: update role + permissions satu pegawai
+    if ($_SERVER['REQUEST_METHOD'] === 'POST'
+        && ($_POST['_action'] ?? '') === 'update_role') {
+      $empId = (int)($_POST['emp_db_id'] ?? 0);
+      $role  = $_POST['role'] ?? 'employee';
+
+      // Ambil permissions[] dari form (checkbox yang dicentang)
+      $rawPerms = $_POST['permissions'] ?? [];
+      $allowed  = ['dashboard','profile','leave-submission','overtime-submission',
+                   'requests','overtime-requests','employees','calendar','reports','role-management','settings'];
+      $perms    = array_values(array_intersect($rawPerms, $allowed));
+
+      if ($empId > 0) {
+        $model->updateRole($empId, $role);
+        $model->updatePermissions($empId, $perms);
+        $saved     = true;
+        $savedName = trim($_POST['emp_name'] ?? '');
+
+        // Jika admin sedang edit dirinya sendiri → refresh permissions di session
+        if ($empId === (int)($_SESSION['user']['id'] ?? 0)) {
+          $_SESSION['user']['role']        = $role;
+          $_SESSION['user']['permissions'] = $perms;
+        }
+      }
+    }
+
+    $employees = $model->getAll();
+
+    $this->render('admin/roles/index', [
+      'pageTitle'  => 'Hak Akses',
+      'currentPage'=> 'role-management',
+      'pageCss'    => ['pages.css', 'employees.css'],
+      'authUser'   => $this->authUser(),
+      'employees'  => $employees,
+      'saved'      => $saved,
+      'savedName'  => $savedName,
     ]);
   }
 }

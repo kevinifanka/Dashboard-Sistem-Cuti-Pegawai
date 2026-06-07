@@ -1,87 +1,126 @@
 <?php
 // app/views/layouts/admin/sidebar.php
 
-// User dari session (dipass oleh controller via $authUser)
 $authUser = $authUser ?? [];
+$uPhotoSidebar = $authUser['photo_path'] ?? null;
+$avatarUrlSidebar = $uPhotoSidebar
+  ? (PUBLIC_URL . $uPhotoSidebar . '?v=' . time())
+  : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($authUser['avatar_seed'] ?? $authUser['name'] ?? 'User');
+
 $sidebarUser = [
   'name'   => $authUser['name']   ?? 'Pengguna',
   'email'  => $authUser['email']  ?? '-',
-  'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($authUser['avatar_seed'] ?? $authUser['name'] ?? 'User'),
+  'avatar' => $avatarUrlSidebar,
   'role'   => ucfirst($authUser['role'] ?? 'employee'),
 ];
 
+$sessionRole = $authUser['role'] ?? 'employee';
+$isAdminOrHrd = in_array($sessionRole, ['admin', 'hrd'], true);
+
 $menuItems = [
   [
-    'id'    => 'dashboard',
-    'label' => 'Dashboard',
-    'icon'  => 'layout-dashboard',
-    'url'   => PUBLIC_URL . '/?page=dashboard',
-    'badge' => null,
+    'id'        => 'dashboard',
+    'label'     => 'Dashboard',
+    'icon'      => 'layout-dashboard',
+    'url'       => PUBLIC_URL . '/?page=dashboard',
+    'badge'     => null,
+    'adminOnly' => false,
   ],
   [
-    'id'    => 'leave-submission',
-    'label' => 'Pengajuan Cuti',
-    'icon'  => 'file-plus',
-    'url'   => PUBLIC_URL . '/?page=leave-submission',
-    'badge' => null,
+    'id'        => 'leave-submission',
+    'label'     => 'Pengajuan Cuti',
+    'icon'      => 'file-plus',
+    'url'       => PUBLIC_URL . '/?page=leave-submission',
+    'badge'     => null,
+    'adminOnly' => false,
   ],
   [
-    'id'    => 'overtime-submission',
-    'label' => 'Pengajuan Lembur',
-    'icon'  => 'clock',
-    'url'   => PUBLIC_URL . '/?page=overtime-submission',
-    'badge' => null,
+    'id'        => 'overtime-submission',
+    'label'     => 'Pengajuan Lembur',
+    'icon'      => 'clock',
+    'url'       => PUBLIC_URL . '/?page=overtime-submission',
+    'badge'     => null,
+    'adminOnly' => false,
   ],
   [
-    'id'    => 'requests',
-    'label' => 'Permohonan Cuti',
-    'icon'  => 'file-text',
-    'url'   => PUBLIC_URL . '/?page=requests',
-    'badge' => null,
+    'id'        => 'requests',
+    'label'     => 'Permohonan Cuti',
+    'icon'      => 'file-text',
+    'url'       => PUBLIC_URL . '/?page=requests',
+    'badge'     => null,
+    'adminOnly' => true,
   ],
   [
-    'id'    => 'overtime-requests',
-    'label' => 'Permohonan Lembur',
-    'icon'  => 'clock-3',
-    'url'   => PUBLIC_URL . '/?page=overtime-requests',
-    'badge' => null,
+    'id'        => 'overtime-requests',
+    'label'     => 'Permohonan Lembur',
+    'icon'      => 'clock-3',
+    'url'       => PUBLIC_URL . '/?page=overtime-requests',
+    'badge'     => null,
+    'adminOnly' => true,
   ],
   [
-    'id'    => 'employees',
-    'label' => 'Data Pegawai',
-    'icon'  => 'users',
-    'url'   => PUBLIC_URL . '/?page=employees',
-    'badge' => null,
+    'id'        => 'employees',
+    'label'     => 'Data Pegawai',
+    'icon'      => 'users',
+    'url'       => PUBLIC_URL . '/?page=employees',
+    'badge'     => null,
+    'adminOnly' => true,
   ],
   [
-    'id'    => 'calendar',
-    'label' => 'Kalender',
-    'icon'  => 'calendar',
-    'url'   => PUBLIC_URL . '/?page=calendar',
-    'badge' => null,
+    'id'        => 'calendar',
+    'label'     => 'Kalender',
+    'icon'      => 'calendar',
+    'url'       => PUBLIC_URL . '/?page=calendar',
+    'badge'     => null,
+    'adminOnly' => false,
+  ],
+  // ─── LAPORAN DISEMBUNYIKAN SEMENTARA ───
+  // [
+  //   'id'        => 'reports',
+  //   'label'     => 'Laporan',
+  //   'icon'      => 'bar-chart-3',
+  //   'url'       => PUBLIC_URL . '/?page=reports',
+  //   'badge'     => null,
+  //   'adminOnly' => true,
+  // ],
+  [
+    'id'        => 'role-management',
+    'label'     => 'Hak Akses',
+    'icon'      => 'shield',
+    'url'       => PUBLIC_URL . '/?page=role-management',
+    'badge'     => null,
+    'adminOnly' => true,
   ],
   [
-    'id'    => 'reports',
-    'label' => 'Laporan',
-    'icon'  => 'bar-chart-3',
-    'url'   => PUBLIC_URL . '/?page=reports',
-    'badge' => null,
+    'id'        => 'settings',
+    'label'     => 'Pengaturan',
+    'icon'      => 'settings',
+    'url'       => PUBLIC_URL . '/?page=settings',
+    'badge'     => null,
+    'adminOnly' => true,
   ],
   [
-    'id'    => 'settings',
-    'label' => 'Pengaturan',
-    'icon'  => 'settings',
-    'url'   => PUBLIC_URL . '/?page=settings',
-    'badge' => null,
-  ],
-  [
-    'id'    => 'profile',
-    'label' => 'Profile',
-    'icon'  => 'user',
-    'url'   => PUBLIC_URL . '/?page=profile',
-    'badge' => null,
+    'id'        => 'profile',
+    'label'     => 'Profile',
+    'icon'      => 'user',
+    'url'       => PUBLIC_URL . '/?page=profile',
+    'badge'     => null,
+    'adminOnly' => false,
   ],
 ];
+
+// Filter menu berdasarkan permissions di session
+// Jika session tidak punya permissions → fallback ke role default
+$sessionPerms = $_SESSION['user']['permissions'] ?? null;
+if (!is_array($sessionPerms)) {
+  // Hitung dari role jika permissions belum ada di session (login lama)
+  $sessionPerms = EmployeeModel::defaultPermissions($sessionRole);
+}
+
+// Map menu id → permission key (biasanya sama, kecuali 'dashboard' = 'dashboard')
+$menuItems = array_values(array_filter($menuItems, function($item) use ($sessionPerms) {
+  return in_array($item['id'], $sessionPerms, true);
+}));
 
 $currentPage = $currentPage ?? 'dashboard';
 ?>

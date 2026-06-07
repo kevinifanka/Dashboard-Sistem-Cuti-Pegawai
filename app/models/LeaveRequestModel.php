@@ -18,7 +18,7 @@ class LeaveRequestModel
     return $this->db->query(
       "SELECT lr.*,
               e.name AS employee_name, e.employee_id AS emp_code,
-              e.avatar_seed, e.department_id,
+              e.avatar_seed, e.photo_path, e.department_id,
               d.name AS department_name,
               lt.name AS leave_type_name
        FROM   leave_requests lr
@@ -35,7 +35,7 @@ class LeaveRequestModel
     $stmt = $this->db->prepare(
       "SELECT lr.*,
               e.name AS employee_name, e.employee_id AS emp_code,
-              e.avatar_seed, d.name AS department_name,
+              e.avatar_seed, e.photo_path, d.name AS department_name,
               lt.name AS leave_type_name
        FROM   leave_requests lr
        JOIN   employees   e  ON e.id  = lr.employee_id

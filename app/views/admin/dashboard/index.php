@@ -48,7 +48,9 @@ $recentRequests = array_map(function(array $r): array {
   return [
     'id'       => $r['id'],
     'name'     => $r['employee_name'],
-    'avatar'   => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($r['avatar_seed'] ?? 'User'),
+    'avatar'   => !empty($r['photo_path'])
+                    ? (PUBLIC_URL . $r['photo_path'] . '?v=' . time())
+                    : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($r['avatar_seed'] ?? 'User'),
     'type'     => $r['leave_type_name'],
     'duration' => ($r['duration_days']) . ' hari',
     'date'     => date('d M', strtotime($r['start_date'])) . '–' . date('d M Y', strtotime($r['end_date'])),
@@ -76,22 +78,7 @@ $quickActions = [
     'url'   => PUBLIC_URL . '/?page=employees',
     'id'    => 'qa-employees',
   ],
-  [
-    'icon'  => 'bar-chart-3',
-    'color' => 'var(--color-purple)',
-    'label' => 'Lihat Laporan',
-    'desc'  => 'Analisis data',
-    'url'   => PUBLIC_URL . '/?page=reports',
-    'id'    => 'qa-reports',
-  ],
-  [
-    'icon'  => 'trending-up',
-    'color' => 'var(--color-orange)',
-    'label' => 'Statistik',
-    'desc'  => 'Bulan ini',
-    'url'   => PUBLIC_URL . '/?page=reports',
-    'id'    => 'qa-statistics',
-  ],
+  // 'Lihat Laporan' dan 'Statistik' disembunyikan sementara
 ];
 
 $statusBadgeClass = [

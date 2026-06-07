@@ -46,6 +46,7 @@ $routes = [
   'calendar'            => ['AdminDashboardController', 'calendar'],
   'reports'             => ['AdminDashboardController', 'reports'],
   'settings'            => ['AdminDashboardController', 'settings'],
+  'role-management'     => ['AdminDashboardController', 'roleManagement'],
 ];
 
 // ---- Dispatch ----

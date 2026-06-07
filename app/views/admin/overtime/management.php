@@ -9,7 +9,9 @@ $overtimes = array_map(function(array $o): array {
     'id'         => $o['request_code'],      // display code (OT001)
     'employeeId' => $o['emp_code'],
     'name'       => $o['employee_name'],
-    'avatar'     => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($o['avatar_seed'] ?? 'User'),
+    'avatar'     => !empty($o['photo_path'])
+                      ? (PUBLIC_URL . $o['photo_path'] . '?v=' . time())
+                      : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($o['avatar_seed'] ?? 'User'),
     'dept'       => $o['department_name'],
     'date'       => $o['overtime_date'],
     'hours'      => (float)$o['duration_hours'],

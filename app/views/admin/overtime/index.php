@@ -51,8 +51,13 @@ $v = fn(string $key, string $default = '') =>
           <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;
                       background:var(--color-gray-50);border:1px solid var(--color-border);
                       border-radius:var(--radius-md);">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=<?= htmlspecialchars($authUser['avatar_seed'] ?? $authUser['name'] ?? 'user') ?>"
-                 style="width:32px;height:32px;border-radius:50%;" alt="" />
+            <?php
+              $avatarUrl = !empty($authUser['photo_path'])
+                ? (PUBLIC_URL . $authUser['photo_path'] . '?v=' . time())
+                : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . htmlspecialchars($authUser['avatar_seed'] ?? $authUser['name'] ?? 'user');
+            ?>
+            <img src="<?= $avatarUrl ?>"
+                 style="width:32px;height:32px;border-radius:50%;object-fit:cover;" alt="" />
             <div>
               <div style="font-weight:600;font-size:var(--font-size-sm);"><?= htmlspecialchars($authUser['name'] ?? '') ?></div>
               <div style="font-size:11px;color:var(--color-gray-500);"><?= htmlspecialchars($authUser['emp_code'] ?? '') ?> · <?= htmlspecialchars($authUser['department'] ?? '') ?></div>

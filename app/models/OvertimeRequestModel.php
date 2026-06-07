@@ -20,6 +20,7 @@ class OvertimeRequestModel
               e.name        AS employee_name,
               e.employee_id AS emp_code,
               e.avatar_seed,
+              e.photo_path,
               d.name        AS department_name
        FROM   overtime_requests ot
        JOIN   employees   e ON e.id = ot.employee_id

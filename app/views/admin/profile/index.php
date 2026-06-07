@@ -36,6 +36,10 @@ $uEmpCode  = htmlspecialchars($authUser['emp_code']   ?? '-');
 $uAddress  = htmlspecialchars($old['address']  ?? $authUser['address']    ?? '');
 $uSeed     = htmlspecialchars($authUser['avatar_seed'] ?? $authUser['name'] ?? 'User');
 $uRole     = htmlspecialchars(ucfirst($authUser['role'] ?? 'employee'));
+$uPhoto    = $authUser['photo_path'] ?? null;
+$avatarUrl = $uPhoto
+  ? (PUBLIC_URL . $uPhoto . '?v=' . time())
+  : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . $uSeed;
 ?>
 
 <div class="page-header">
@@ -48,7 +52,7 @@ $uRole     = htmlspecialchars(ucfirst($authUser['role'] ?? 'employee'));
             background:#dcfce7;border:1px solid #bbf7d0;border-radius:var(--radius-lg);
             margin-bottom:var(--space-5);color:#166534;font-size:var(--font-size-sm);">
   <i data-lucide="check-circle" style="width:18px;height:18px;flex-shrink:0;"></i>
-  <span>Profil berhasil diperbarui!</span>
+  <span><?= isset($_GET['photo']) ? 'Foto profil berhasil diperbarui!' : 'Profil berhasil diperbarui!' ?></span>
 </div>
 <?php endif; ?>
 
@@ -74,17 +78,28 @@ $uRole     = htmlspecialchars(ucfirst($authUser['role'] ?? 'employee'));
     <div class="card">
       <div class="profile-center">
               <!-- Avatar + Camera btn -->
-        <div class="profile-avatar-wrapper">
-          <div class="profile-avatar">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=<?= $uSeed ?>" alt="Avatar"
-                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-            <span class="profile-avatar-fallback" style="display:none"><?= mb_substr($uName,0,1) ?></span>
-          </div>
-          <button class="profile-camera-btn" title="Upload foto" onclick="document.getElementById('avatarInput').click()">
-            <i data-lucide="camera"></i>
-          </button>
-          <input type="file" id="avatarInput" accept="image/*" style="display:none;" />
+      <div class="profile-avatar-wrapper">
+        <div class="profile-avatar" id="avatarPreviewWrap">
+          <img id="avatarPreviewImg"
+               src="<?= $avatarUrl ?>"
+               alt="Avatar"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <span class="profile-avatar-fallback" style="display:none"><?= mb_substr($uName,0,1) ?></span>
         </div>
+        <button type="button" class="profile-camera-btn" title="Upload foto"
+                onclick="document.getElementById('photoFileInput').click()">
+          <i data-lucide="camera"></i>
+        </button>
+      </div>
+
+      <!-- Hidden upload form (multipart) -->
+      <form id="photoUploadForm" method="POST"
+            action="<?= PUBLIC_URL ?>/?page=profile"
+            enctype="multipart/form-data" style="display:none;">
+        <input type="hidden" name="_action" value="upload_photo">
+        <input type="file" id="photoFileInput" name="photo"
+               accept="image/jpeg,image/png,image/gif,image/webp">
+      </form>
 
         <!-- Name / Position / Badge -->
         <div class="profile-name" id="profileNameDisplay"><?= $uName ?></div>
@@ -410,6 +425,38 @@ $uRole     = htmlspecialchars(ucfirst($authUser['role'] ?? 'employee'));
 
 <!-- ===== JAVASCRIPT ===== -->
 <script>
+// ---- Avatar upload preview + auto-submit ----
+document.getElementById('photoFileInput').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+
+  const allowed = ['image/jpeg','image/png','image/gif','image/webp'];
+  if (!allowed.includes(file.type)) {
+    alert('Format foto harus JPG, PNG, GIF, atau WebP.');
+    this.value = ''; return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    alert('Ukuran foto maksimal 2 MB.');
+    this.value = ''; return;
+  }
+
+  // Preview lokal sebelum submit
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = document.getElementById('avatarPreviewImg');
+    if (img) {
+      img.src = e.target.result;
+      img.style.display = '';
+      const fb = img.nextElementSibling;
+      if (fb) fb.style.display = 'none';
+    }
+  };
+  reader.readAsDataURL(file);
+
+  // Auto-submit ke server
+  document.getElementById('photoUploadForm').submit();
+});
+
 // ---- Editable fields (name, phone, position, address) ----
 const editableIds = ['f-fullName', 'f-phone', 'f-position', 'f-address'];
 

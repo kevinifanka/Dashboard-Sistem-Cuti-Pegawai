@@ -22,14 +22,18 @@ class AuthController
   private function buildSession(array $emp): void
   {
     session_regenerate_id(true);
+    // Load permissions dari DB (jika ada) atau hitung dari role
+    $empModel   = new EmployeeModel();
+    $role       = $emp['role'] ?? 'employee';
+    $empDbId    = (int)$emp['id'];
+    $permissions= $empModel->getPermissions($empDbId, $role);
+
     $_SESSION['user'] = [
-      'id'            => (int)$emp['id'],
+      'id'            => $empDbId,
       'name'          => $emp['name'],
       'email'         => $emp['email'],
-      'role'          => $emp['role']         ?? 'employee',
-      // employee_id = id di tabel employees (int, untuk FK ke leave/overtime)
-      'employee_id'   => (int)$emp['id'],
-      // emp_code = kode VARCHAR seperti "EMP001"
+      'role'          => $role,
+      'employee_id'   => $empDbId,
       'emp_code'      => $emp['employee_id']  ?? '',
       'position'      => $emp['position']     ?? '',
       'department_id' => $emp['department_id'] ? (int)$emp['department_id'] : null,
@@ -38,6 +42,8 @@ class AuthController
       'address'       => $emp['address']      ?? '',
       'avatar_seed'   => $emp['avatar_seed']  ?? $emp['name'],
       'join_date'     => $emp['join_date']    ?? '',
+      'photo_path'    => $emp['photo_path']   ?? null,
+      'permissions'   => $permissions,
     ];
   }
 

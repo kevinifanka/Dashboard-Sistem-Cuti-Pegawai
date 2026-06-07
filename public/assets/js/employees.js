@@ -46,14 +46,37 @@
     return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  function statusBadgeHtml(status) {
-    const map = {
-      'active':   { cls: 'badge-approved',  label: 'Aktif' },
-      'on-leave': { cls: 'badge-pending',   label: 'Sedang Cuti' },
-      'inactive': { cls: 'badge badge-inactive', label: 'Tidak Aktif' },
-    };
-    const s = map[status] || { cls: 'badge-pending', label: status };
-    return `<span class="badge ${s.cls}">${s.label}</span>`;
+  function statusBadgeHtml(status, activity) {
+    // Jika ada aktivitas hari ini → tampilkan badge aktivitas (menggantikan Aktif)
+    if (activity === 'cuti') {
+      return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;
+                font-size:0.75rem;font-weight:500;
+                border:1.5px solid #f59e0b;color:#d97706;background:transparent;">
+                Sedang Cuti</span>`;
+    }
+    if (activity === 'lembur') {
+      return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;
+                font-size:0.75rem;font-weight:500;
+                border:1.5px solid #8b5cf6;color:#7c3aed;background:transparent;">
+                Sedang Lembur</span>`;
+    }
+    // Status normal
+    if (status === 'active') {
+      return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;
+                font-size:0.75rem;font-weight:500;
+                border:1.5px solid #22c55e;color:#16a34a;background:transparent;">
+                Aktif</span>`;
+    }
+    if (status === 'inactive') {
+      return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;
+                font-size:0.75rem;font-weight:500;
+                border:1.5px solid #94a3b8;color:#64748b;background:transparent;">
+                Tidak Aktif</span>`;
+    }
+    return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;
+              font-size:0.75rem;font-weight:500;
+              border:1.5px solid #94a3b8;color:#64748b;background:transparent;">
+              ${status}</span>`;
   }
 
   // ---- Render Table ---- 
@@ -101,7 +124,7 @@
             <div class="progress-fill" style="width:${pct}%"></div>
           </div>
         </td>
-        <td>${statusBadgeHtml(emp.status)}</td>
+        <td>${statusBadgeHtml(emp.status, emp.currentActivity)}</td>
         <td>
           <button class="btn-icon btn-view-emp" data-id="${emp.id}" title="Lihat Detail">
             <i data-lucide="eye"></i>
@@ -157,8 +180,24 @@
       'inactive': { cls: 'badge-rejected', label: 'Tidak Aktif' },
     };
     const s = statusMap[emp.status] || { cls: 'badge-pending', label: emp.status };
-    mStatusBadge.className = `badge ${s.cls}`;
+    mStatusBadge.className   = `badge ${s.cls}`;
     mStatusBadge.textContent = s.label;
+
+    // Activity badge di modal
+    const mActivityBadge = document.getElementById('m-activity-badge');
+    if (mActivityBadge) {
+      if (emp.currentActivity === 'cuti') {
+        mActivityBadge.style.display = '';
+        mActivityBadge.textContent   = '🏖 Sedang Cuti';
+        mActivityBadge.style.cssText += 'background:#fef3c7;color:#92400e;border:1px solid #fde68a;';
+      } else if (emp.currentActivity === 'lembur') {
+        mActivityBadge.style.display = '';
+        mActivityBadge.textContent   = '⏰ Sedang Lembur';
+        mActivityBadge.style.cssText += 'background:#f3e8ff;color:#6b21a8;border:1px solid #e9d5ff;';
+      } else {
+        mActivityBadge.style.display = 'none';
+      }
+    }
 
     mDeptBadge.textContent  = emp.department;
     mId.textContent         = emp.id;
