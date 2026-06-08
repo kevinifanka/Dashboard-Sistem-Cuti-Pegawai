@@ -198,6 +198,7 @@ $empJson        = json_encode($employees, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HE
       <div class="modal-emp-header">
         <div class="avatar" style="width:72px;height:72px;flex-shrink:0;">
           <img id="m-avatar" src="" alt="Avatar Pegawai"
+            style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
           <span class="avatar-fallback" style="display:none">?</span>
         </div>
