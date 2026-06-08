@@ -766,7 +766,7 @@ class AdminDashboardController
       // Ambil permissions[] dari form (checkbox yang dicentang)
       $rawPerms = $_POST['permissions'] ?? [];
       $allowed  = ['dashboard','profile','leave-submission','overtime-submission',
-                   'requests','overtime-requests','employees','calendar','reports','role-management','settings'];
+                   'requests','overtime-requests','history','employees','calendar','reports','role-management','settings'];
       $perms    = array_values(array_intersect($rawPerms, $allowed));
 
       if ($empId > 0) {
