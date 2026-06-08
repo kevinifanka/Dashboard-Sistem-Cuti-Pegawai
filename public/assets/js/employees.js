@@ -169,8 +169,15 @@
   function openModal(emp) {
     const pct = Math.round((emp.usedLeave / emp.totalLeave) * 100);
 
+    // Reset visibility before assigning new src
+    mAvatar.style.display = 'block';
+    const fallback = document.getElementById('m-avatar-fallback');
+    if (fallback) fallback.style.display = 'none';
+
     mAvatar.src = emp.avatar;
     mAvatar.alt = 'Avatar ' + emp.name;
+    if (fallback) fallback.textContent = emp.name.charAt(0);
+
     mName.textContent     = emp.name;
     mPosition.textContent = emp.position;
 
