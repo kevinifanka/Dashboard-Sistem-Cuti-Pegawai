@@ -630,8 +630,43 @@ class AdminDashboardController
       return;
     }
 
+    // ── Handle POST: Ubah Password (AJAX) ──
+    if ($_SERVER['REQUEST_METHOD'] === 'POST'
+        && ($_POST['_action'] ?? '') === 'change_password') {
+      
+      header('Content-Type: application/json');
+      
+      $curPwd = $_POST['current_password'] ?? '';
+      $newPwd = $_POST['new_password']     ?? '';
+      
+      if (empty($curPwd) || empty($newPwd)) {
+        echo json_encode(['success' => false, 'message' => 'Password lama dan baru harus diisi.']);
+        exit;
+      }
+      if (strlen($newPwd) < 8) {
+        echo json_encode(['success' => false, 'message' => 'Password baru minimal 8 karakter.']);
+        exit;
+      }
+
+      $userModel = new UserModel();
+      $freshUser = $userModel->findById($empId);
+
+      // Verifikasi password lama
+      if (!$freshUser || !password_verify($curPwd, $freshUser['password_hash'])) {
+        echo json_encode(['success' => false, 'message' => 'Password lama tidak sesuai.']);
+        exit;
+      }
+
+      // Hash & Update password baru
+      $newHash = password_hash($newPwd, PASSWORD_BCRYPT);
+      $userModel->changePassword($empId, $newHash);
+
+      echo json_encode(['success' => true, 'message' => 'Password berhasil diubah.']);
+      exit;
+    }
+
     // ── Handle POST: simpan perubahan ke DB ──
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['_action'])) {
       $name     = trim($_POST['name']          ?? '');
       $phone    = trim($_POST['phone']         ?? '');
       $position = trim($_POST['position']      ?? '');

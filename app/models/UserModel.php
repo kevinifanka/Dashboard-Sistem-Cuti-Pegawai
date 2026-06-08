@@ -56,4 +56,13 @@ class UserModel
     $row = $stmt->fetch();
     return $row ?: null;
   }
+
+  /**
+   * Update password hash
+   */
+  public function changePassword(int $id, string $hash): bool
+  {
+    $stmt = $this->db->prepare("UPDATE employees SET password_hash = ? WHERE id = ?");
+    return $stmt->execute([$hash, $id]);
+  }
 }

@@ -131,8 +131,8 @@ $avatarUrl = $uPhoto
       </div>
     </div>
 
-    <!-- Leave Quota Card -->
-    <div class="card">
+    <!-- Leave Quota Card (Hidden temporarily) -->
+    <div class="card" style="display:none;">
       <div class="card-header">
         <h3 class="card-title">Kuota Cuti</h3>
         <p class="card-description">Sisa jatah cuti Anda</p>
@@ -155,8 +155,8 @@ $avatarUrl = $uPhoto
       </div>
     </div>
 
-    <!-- Overtime Quota Card -->
-    <div class="card">
+    <!-- Overtime Quota Card (Hidden temporarily) -->
+    <div class="card" style="display:none;">
       <div class="card-header">
         <h3 class="card-title">Kuota Lembur</h3>
         <p class="card-description">Jam lembur yang telah digunakan</p>
@@ -517,11 +517,44 @@ function submitPassword() {
   const cur  = document.getElementById('p-current').value.trim();
   const np   = document.getElementById('p-new').value.trim();
   const conf = document.getElementById('p-confirm').value.trim();
+  
   if (!cur || !np || !conf) { alert('Semua field harus diisi!'); return; }
-  if (np !== conf) { alert('Password baru dan konfirmasi password tidak cocok'); return; }
+  if (np !== conf) { alert('Password baru dan konfirmasi password tidak cocok!'); return; }
   if (np.length < 8) { alert('Password minimal 8 karakter!'); return; }
-  closePasswordModal();
-  showSuccess('Password berhasil diubah');
+  
+  const btn = document.querySelector('#passwordModal .btn-primary');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = 'Memproses...';
+  btn.disabled = true;
+
+  const formData = new URLSearchParams();
+  formData.append('_action', 'change_password');
+  formData.append('current_password', cur);
+  formData.append('new_password', np);
+
+  fetch('<?= PUBLIC_URL ?>/?page=profile', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  })
+  .then(res => res.json())
+  .then(data => {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    
+    if (data.success) {
+      closePasswordModal();
+      showSuccess(data.message);
+    } else {
+      alert(data.message);
+    }
+  })
+  .catch(err => {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    alert('Terjadi kesalahan jaringan.');
+    console.error(err);
+  });
 }
 
 // ---- Success Modal ----
