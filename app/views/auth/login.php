@@ -58,7 +58,6 @@ $timeout    = ($_GET['reason'] ?? '') === 'timeout';
         <div class="auth-field">
           <div class="auth-field-header">
             <label class="auth-label" for="password">Password</label>
-            <a class="auth-forgot" href="<?= PUBLIC_URL ?>/?page=forgot-password">forgot password</a>
           </div>
           <input
             id="password"
@@ -89,11 +88,7 @@ $timeout    = ($_GET['reason'] ?? '') === 'timeout';
         <a href="<?= PUBLIC_URL ?>/?page=register">Sign Up</a>
       </div>
 
-      <!-- Or divider -->
-      <div class="auth-divider">
-        <div class="auth-divider-line"></div>
-        <div class="auth-divider-or">Or</div>
-      </div>
+
 
     </div>
   </div>
