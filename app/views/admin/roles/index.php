@@ -6,10 +6,10 @@ $savedName  = $savedName ?? '';
 
 // Permissions per role — defined before function so they can be passed
 $allPerms  = ['dashboard','profile','leave-submission','overtime-submission',
-              'requests','overtime-requests','employees','calendar','reports','role-management','settings'];
-$userPerms = ['dashboard','profile','leave-submission','overtime-submission','calendar'];
+              'requests','overtime-requests','history','employees','calendar','reports','role-management','settings'];
+$userPerms = ['dashboard','profile','leave-submission','overtime-submission','history','calendar'];
 $hrdPerms  = ['dashboard','profile','leave-submission','overtime-submission',
-              'requests','overtime-requests','employees','calendar','reports','settings'];
+              'requests','overtime-requests','history','employees','calendar','reports','settings'];
 
 function getPerms(string $role, array $allPerms, array $hrdPerms, array $userPerms): array {
   if ($role === 'admin')    return $allPerms;
@@ -30,6 +30,7 @@ $permMeta = [
   'requests'           => ['label' => 'Permohonan Cuti',    'icon' => 'file-text',         'desc' => 'Melihat dan mengelola permohonan cuti'],
   'overtime-requests'  => ['label' => 'Permohonan Lembur',  'icon' => 'clock-3',           'desc' => 'Melihat dan mengelola permohonan lembur'],
   'employees'          => ['label' => 'Data Pegawai',       'icon' => 'users',             'desc' => 'Mengelola data pegawai'],
+  'history'            => ['label' => 'Riwayat Pengajuan',  'icon' => 'history',           'desc' => 'Melihat riwayat pengajuan cuti & lembur'],
   'calendar'           => ['label' => 'Kalender',           'icon' => 'calendar',          'desc' => 'Melihat kalender cuti'],
   'reports'            => ['label' => 'Laporan',            'icon' => 'bar-chart-3',       'desc' => 'Akses laporan dan analisis'],
   'role-management'    => ['label' => 'Manajemen Hak Akses','icon' => 'shield',            'desc' => 'Mengelola role dan permission'],

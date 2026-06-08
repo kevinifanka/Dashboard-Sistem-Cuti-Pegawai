@@ -155,4 +155,51 @@ class LeaveRequestModel
     $stmt->execute([$reason, $days]);
     return $stmt->rowCount();
   }
+  /**
+   * Riwayat pengajuan cuti (approved/rejected) untuk semua pegawai — dipakai Admin/HRD.
+   */
+  public function getHistory(?int $year = null): array
+  {
+    $yearCond = $year ? "AND YEAR(lr.submitted_at) = $year" : '';
+    return $this->db->query(
+      "SELECT lr.*,
+              e.name        AS employee_name,
+              e.employee_id AS emp_code,
+              e.avatar_seed,
+              e.photo_path,
+              d.name        AS department_name,
+              lt.name       AS leave_type_name
+       FROM   leave_requests lr
+       JOIN   employees   e  ON e.id  = lr.employee_id
+       JOIN   departments d  ON d.id  = e.department_id
+       JOIN   leave_types lt ON lt.id = lr.leave_type_id
+       WHERE  lr.status IN ('approved','rejected') $yearCond
+       ORDER  BY lr.submitted_at DESC"
+    )->fetchAll();
+  }
+
+  /**
+   * Riwayat pengajuan cuti milik satu pegawai saja (approved/rejected).
+   */
+  public function getHistoryByEmployee(int $employeeId, ?int $year = null): array
+  {
+    $yearCond = $year ? "AND YEAR(lr.submitted_at) = $year" : '';
+    $stmt = $this->db->prepare(
+      "SELECT lr.*,
+              e.name        AS employee_name,
+              e.employee_id AS emp_code,
+              e.avatar_seed,
+              e.photo_path,
+              d.name        AS department_name,
+              lt.name       AS leave_type_name
+       FROM   leave_requests lr
+       JOIN   employees   e  ON e.id  = lr.employee_id
+       JOIN   departments d  ON d.id  = e.department_id
+       JOIN   leave_types lt ON lt.id = lr.leave_type_id
+       WHERE  lr.employee_id = ? AND lr.status IN ('approved','rejected') $yearCond
+       ORDER  BY lr.submitted_at DESC"
+    );
+    $stmt->execute([$employeeId]);
+    return $stmt->fetchAll();
+  }
 }

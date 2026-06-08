@@ -44,6 +44,7 @@ $routes = [
   'overtime-requests'   => ['AdminDashboardController', 'overtimeManagement'],
   'employees'           => ['AdminDashboardController', 'employees'],
   'calendar'            => ['AdminDashboardController', 'calendar'],
+  'history'             => ['AdminDashboardController', 'submissionHistory'],
   'reports'             => ['AdminDashboardController', 'reports'],
   'settings'            => ['AdminDashboardController', 'settings'],
   'role-management'     => ['AdminDashboardController', 'roleManagement'],

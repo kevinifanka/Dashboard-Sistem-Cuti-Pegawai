@@ -396,6 +396,89 @@ class AdminDashboardController
     ]);
   }
 
+  // ─── Submission History ──────────────────────────────────
+  public function submissionHistory(): void
+  {
+    $this->requireAuth();
+
+    $leaveModel = new LeaveRequestModel();
+    $otModel    = new OvertimeRequestModel();
+    $authUser   = $this->authUser();
+
+    $role = $authUser['role'] ?? 'employee';
+    $empId = (int)$authUser['employee_id'];
+    $year = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
+
+    if (in_array($role, ['admin', 'hrd'], true)) {
+      $leaves = $leaveModel->getHistory($year);
+      $overtimes = $otModel->getHistory($year);
+    } else {
+      $leaves = $leaveModel->getHistoryByEmployee($empId, $year);
+      $overtimes = $otModel->getHistoryByEmployee($empId, $year);
+    }
+
+    $history = [];
+
+    // Format Leave
+    foreach ($leaves as $l) {
+      $history[] = [
+        'id'            => 'L' . $l['id'],
+        'employeeId'    => $l['emp_code'],
+        'name'          => $l['employee_name'],
+        'avatar'        => $l['photo_path'] 
+                           ? (PUBLIC_URL . $l['photo_path'] . '?v=' . time())
+                           : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($l['avatar_seed'] ?? 'User'),
+        'type'          => 'cuti',
+        'leaveType'     => $l['leave_type_name'],
+        'startDate'     => $l['start_date'],
+        'endDate'       => $l['end_date'],
+        'duration'      => $l['duration_days'],
+        'reason'        => $l['reason'],
+        'status'        => $l['status'],
+        'submittedDate' => $l['submitted_at'],
+        'processedDate' => $l['approved_at'] ?? $l['submitted_at'],
+        'rejectionReason'=> $l['rejection_reason']
+      ];
+    }
+
+    // Format Overtime
+    foreach ($overtimes as $o) {
+      $history[] = [
+        'id'            => 'O' . $o['id'],
+        'employeeId'    => $o['emp_code'],
+        'name'          => $o['employee_name'],
+        'avatar'        => $o['photo_path'] 
+                           ? (PUBLIC_URL . $o['photo_path'] . '?v=' . time())
+                           : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($o['avatar_seed'] ?? 'User'),
+        'type'          => 'lembur',
+        'overtimeDate'  => $o['overtime_date'],
+        'startTime'     => date('H:i', strtotime($o['start_time'])),
+        'endTime'       => date('H:i', strtotime($o['end_time'])),
+        'hours'         => $o['duration_hours'] ?? 0,
+        'reason'        => $o['reason'],
+        'status'        => $o['status'],
+        'submittedDate' => $o['submitted_at'],
+        'processedDate' => $o['approved_at'] ?? $o['submitted_at'],
+        'rejectionReason'=> $o['rejection_reason']
+      ];
+    }
+
+    // Sort combined history by submittedDate DESC
+    usort($history, function($a, $b) {
+      return strtotime($b['submittedDate']) - strtotime($a['submittedDate']);
+    });
+
+    $this->render('admin/history/index', [
+      'pageTitle'   => 'Riwayat Pengajuan',
+      'currentPage' => 'history',
+      'pageCss'     => ['pages.css', 'employees.css', 'history.css'],
+      'pageJs'      => ['history.js'],
+      'authUser'    => $authUser,
+      'history'     => $history,
+      'year'        => $year
+    ]);
+  }
+
   // ─── Calendar ─────────────────────────────────────────────
   public function calendar(): void
   {

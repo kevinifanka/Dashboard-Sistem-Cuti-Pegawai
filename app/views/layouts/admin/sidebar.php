@@ -59,6 +59,14 @@ $menuItems = [
     'adminOnly' => true,
   ],
   [
+    'id'        => 'history',
+    'label'     => 'Riwayat Pengajuan',
+    'icon'      => 'history',
+    'url'       => PUBLIC_URL . '/?page=history',
+    'badge'     => null,
+    'adminOnly' => false,
+  ],
+  [
     'id'        => 'employees',
     'label'     => 'Data Pegawai',
     'icon'      => 'users',

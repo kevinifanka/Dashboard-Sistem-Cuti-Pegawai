@@ -69,10 +69,10 @@ class EmployeeModel
   public static function defaultPermissions(string $role): array
   {
     $all  = ['dashboard','profile','leave-submission','overtime-submission',
-             'requests','overtime-requests','employees','calendar','reports','role-management','settings'];
+             'requests','overtime-requests','history','employees','calendar','reports','role-management','settings'];
     $hrd  = ['dashboard','profile','leave-submission','overtime-submission',
-             'requests','overtime-requests','employees','calendar','reports','settings'];
-    $user = ['dashboard','profile','leave-submission','overtime-submission','calendar'];
+             'requests','overtime-requests','history','employees','calendar','reports','settings'];
+    $user = ['dashboard','profile','leave-submission','overtime-submission','history','calendar'];
 
     if ($role === 'admin')    return $all;
     if ($role === 'hrd')      return $hrd;

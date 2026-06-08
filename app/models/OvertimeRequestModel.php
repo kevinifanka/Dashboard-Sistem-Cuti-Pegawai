@@ -137,4 +137,47 @@ class OvertimeRequestModel
     $stmt->execute([$reason, $days]);
     return $stmt->rowCount();
   }
+  /**
+   * Riwayat pengajuan lembur (approved/rejected) untuk semua pegawai — dipakai Admin/HRD.
+   */
+  public function getHistory(?int $year = null): array
+  {
+    $yearCond = $year ? "AND YEAR(ot.submitted_at) = $year" : '';
+    return $this->db->query(
+      "SELECT ot.*,
+              e.name        AS employee_name,
+              e.employee_id AS emp_code,
+              e.avatar_seed,
+              e.photo_path,
+              d.name        AS department_name
+       FROM   overtime_requests ot
+       JOIN   employees   e ON e.id = ot.employee_id
+       JOIN   departments d ON d.id = e.department_id
+       WHERE  ot.status IN ('approved','rejected') $yearCond
+       ORDER  BY ot.submitted_at DESC"
+    )->fetchAll();
+  }
+
+  /**
+   * Riwayat pengajuan lembur milik satu pegawai saja (approved/rejected).
+   */
+  public function getHistoryByEmployee(int $employeeId, ?int $year = null): array
+  {
+    $yearCond = $year ? "AND YEAR(ot.submitted_at) = $year" : '';
+    $stmt = $this->db->prepare(
+      "SELECT ot.*,
+              e.name        AS employee_name,
+              e.employee_id AS emp_code,
+              e.avatar_seed,
+              e.photo_path,
+              d.name        AS department_name
+       FROM   overtime_requests ot
+       JOIN   employees   e ON e.id = ot.employee_id
+       JOIN   departments d ON d.id = e.department_id
+       WHERE  ot.employee_id = ? AND ot.status IN ('approved','rejected') $yearCond
+       ORDER  BY ot.submitted_at DESC"
+    );
+    $stmt->execute([$employeeId]);
+    return $stmt->fetchAll();
+  }
 }
